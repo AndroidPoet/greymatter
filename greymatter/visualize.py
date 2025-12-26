@@ -72,356 +72,182 @@ def get_memory_graph_data() -> Dict:
     }
 
 
-# Embedded HTML/JS for visualization
+# Embedded HTML/JS for visualization - Simple card layout, no physics
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Grey Matter Memory Visualization</title>
-    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <title>Grey Matter - Memory Viewer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #1a1a2e;
             color: #eee;
-        }
-        .container {
-            display: flex;
-            height: 100vh;
-        }
-        .sidebar {
-            width: 300px;
-            background: #16213e;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            min-height: 100vh;
         }
         .header {
-            padding: 15px 20px;
+            padding: 20px 30px;
             background: #0f3460;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .header h1 {
-            font-size: 1.5rem;
-            color: #e94560;
+        .header h1 { font-size: 1.5rem; color: #e94560; }
+        .stats {
+            display: flex;
+            gap: 30px;
         }
-        #graph {
-            flex: 1;
-            background: #1a1a2e;
-        }
-        .stat-card {
-            background: #0f3460;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        .stat-card h3 {
-            color: #e94560;
-            margin-bottom: 10px;
-        }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #e94560; }
+        .stat-label { font-size: 0.8rem; color: #888; }
+        .search-bar {
+            padding: 15px 30px;
+            background: #16213e;
         }
         .search-box {
             width: 100%;
-            padding: 10px;
+            max-width: 500px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
             background: #0f3460;
             color: #fff;
-            margin-bottom: 15px;
+            font-size: 1rem;
         }
-        .memory-item {
-            background: #0f3460;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .search-box::placeholder { color: #666; }
+        .container {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
         }
-        .memory-item:hover {
-            background: #e94560;
+        .memory-card {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #e94560;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .memory-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .memory-card.preference { border-left-color: #e94560; }
+        .memory-card.decision { border-left-color: #3498db; }
+        .memory-card.learning { border-left-color: #2ecc71; }
+        .memory-card.problem { border-left-color: #f39c12; }
+        .memory-card.solution { border-left-color: #9b59b6; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
         .memory-type {
-            font-size: 0.8rem;
-            color: #888;
+            font-size: 0.75rem;
             text-transform: uppercase;
-        }
-        .memory-content {
-            font-size: 0.9rem;
-            margin-top: 5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #0f3460;
         }
         .importance {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        .importance-high { background: #e94560; }
-        .importance-med { background: #f39c12; }
-        .importance-low { background: #3498db; }
-        .legend {
-            display: flex;
-            gap: 15px;
             font-size: 0.8rem;
+            color: #888;
         }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .memory-content {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #ddd;
         }
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        .memory-date {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            color: #666;
         }
-        .detail-panel {
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 350px;
-            height: 100%;
-            background: #16213e;
-            padding: 20px;
-            transform: translateX(100%);
-            transition: transform 0.3s;
-            overflow-y: auto;
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            color: #666;
         }
-        .detail-panel.open {
-            transform: translateX(0);
-        }
-        .close-btn {
-            float: right;
-            background: none;
-            border: none;
-            color: #e94560;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
+        .empty-state h2 { margin-bottom: 10px; color: #888; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <input type="text" class="search-box" placeholder="Search memories..." id="search">
-
-            <div class="stat-card">
-                <h3>Memories</h3>
+    <div class="header">
+        <h1>🧠 Grey Matter</h1>
+        <div class="stats">
+            <div class="stat">
                 <div class="stat-value" id="stat-memories">0</div>
+                <div class="stat-label">Memories</div>
             </div>
-
-            <div class="stat-card">
-                <h3>Sessions</h3>
+            <div class="stat">
                 <div class="stat-value" id="stat-sessions">0</div>
+                <div class="stat-label">Sessions</div>
             </div>
-
-            <div class="stat-card">
-                <h3>Connections</h3>
-                <div class="stat-value" id="stat-edges">0</div>
+            <div class="stat">
+                <div class="stat-value" id="stat-handoffs">0</div>
+                <div class="stat-label">Handoffs</div>
             </div>
-
-            <h3 style="margin: 20px 0 10px;">Recent Memories</h3>
-            <div id="memory-list"></div>
-        </div>
-
-        <div class="main">
-            <div class="header">
-                <h1>🧠 Grey Matter Memory Graph</h1>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background: #e94560;"></div>
-                        preference
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background: #3498db;"></div>
-                        decision
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background: #2ecc71;"></div>
-                        learning
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background: #f39c12;"></div>
-                        problem
-                    </div>
-                </div>
-            </div>
-            <div id="graph"></div>
         </div>
     </div>
 
-    <div class="detail-panel" id="detail-panel">
-        <button class="close-btn" onclick="closeDetail()">×</button>
-        <h2 id="detail-title">Memory Details</h2>
-        <div id="detail-content"></div>
+    <div class="search-bar">
+        <input type="text" class="search-box" placeholder="Search memories..." id="search">
     </div>
+
+    <div class="container" id="memory-list"></div>
 
     <script>
-        let network = null;
         let allData = null;
-
-        // Color mapping for types
-        const typeColors = {
-            'preference': '#e94560',
-            'decision': '#3498db',
-            'learning': '#2ecc71',
-            'problem': '#f39c12',
-            'solution': '#9b59b6',
-            'instruction': '#1abc9c',
-            'inform': '#95a5a6',
-            'unknown': '#7f8c8d'
-        };
 
         async function loadData() {
             const response = await fetch('/api/graph');
             allData = await response.json();
 
-            // Update stats
             document.getElementById('stat-memories').textContent = allData.nodes.length;
             document.getElementById('stat-sessions').textContent = allData.stats.sessions || 0;
-            document.getElementById('stat-edges').textContent = allData.edges.length;
+            document.getElementById('stat-handoffs').textContent = allData.stats.handoffs || 0;
 
-            // Update memory list
-            const listEl = document.getElementById('memory-list');
-            listEl.innerHTML = allData.nodes.slice(0, 20).map(node => `
-                <div class="memory-item" onclick="focusNode('${node.id}')">
-                    <span class="importance importance-${node.importance >= 7 ? 'high' : node.importance >= 4 ? 'med' : 'low'}"></span>
-                    <span class="memory-type">${node.type}</span>
-                    <div class="memory-content">${node.label}</div>
-                </div>
-            `).join('');
-
-            // Create graph
-            renderGraph(allData);
+            renderMemories(allData.nodes);
         }
 
-        function renderGraph(data) {
-            const container = document.getElementById('graph');
+        function renderMemories(memories) {
+            const container = document.getElementById('memory-list');
 
-            // Destroy existing network to prevent memory leaks
-            if (network) {
-                network.destroy();
-                network = null;
-            }
-
-            // Skip if no data
-            if (!data.nodes || data.nodes.length === 0) {
-                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-size:1.2rem;">No memories yet. Start using Grey Matter!</div>';
+            if (!memories || memories.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h2>No memories yet</h2><p>Start using Grey Matter and your memories will appear here!</p></div>';
                 return;
             }
 
-            const nodes = new vis.DataSet(data.nodes.map(n => ({
-                ...n,
-                color: {
-                    background: typeColors[n.type] || typeColors['unknown'],
-                    border: '#fff',
-                    highlight: { background: '#fff', border: typeColors[n.type] }
-                },
-                size: 10 + n.importance * 2,
-                font: { color: '#fff', size: 10 }
-            })));
-
-            const edges = new vis.DataSet(data.edges.map(e => ({
-                ...e,
-                color: { color: 'rgba(255,255,255,0.2)', highlight: '#e94560' },
-                width: e.value * 3
-            })));
-
-            const options = {
-                nodes: {
-                    shape: 'dot',
-                    borderWidth: 2,
-                },
-                edges: {
-                    smooth: { type: 'continuous' }
-                },
-                physics: data.nodes.length > 2 ? {
-                    stabilization: {
-                        enabled: true,
-                        iterations: 100,
-                        updateInterval: 50
-                    },
-                    barnesHut: {
-                        gravitationalConstant: -2000,
-                        springConstant: 0.04,
-                        damping: 0.5
-                    },
-                    minVelocity: 1.0,
-                    maxVelocity: 30
-                } : false,  // Disable physics for small graphs
-                interaction: {
-                    hover: true,
-                    tooltipDelay: 100
-                }
-            };
-
-            network = new vis.Network(container, { nodes, edges }, options);
-
-            network.on('click', function(params) {
-                if (params.nodes.length > 0) {
-                    showDetail(params.nodes[0]);
-                }
-            });
-
-            // Stop physics after stabilization
-            network.on('stabilizationIterationsDone', function() {
-                network.setOptions({ physics: false });
-            });
+            container.innerHTML = memories.map(mem => `
+                <div class="memory-card ${mem.type}">
+                    <div class="card-header">
+                        <span class="memory-type">${mem.type}</span>
+                        <span class="importance">⭐ ${mem.importance}/10</span>
+                    </div>
+                    <div class="memory-content">${mem.content}</div>
+                    <div class="memory-date">${mem.created_at}</div>
+                </div>
+            `).join('');
         }
 
-        function focusNode(nodeId) {
-            if (network) {
-                network.focus(nodeId, { scale: 1.5, animation: true });
-                network.selectNodes([nodeId]);
-                showDetail(nodeId);
-            }
-        }
-
-        function showDetail(nodeId) {
-            const node = allData.nodes.find(n => n.id === nodeId);
-            if (!node) return;
-
-            document.getElementById('detail-title').textContent = node.type;
-            document.getElementById('detail-content').innerHTML = `
-                <p style="margin: 15px 0;"><strong>Content:</strong></p>
-                <p>${node.content}</p>
-                <p style="margin: 15px 0;"><strong>Importance:</strong> ${node.importance}/10</p>
-                <p><strong>Created:</strong> ${node.created_at}</p>
-            `;
-            document.getElementById('detail-panel').classList.add('open');
-        }
-
-        function closeDetail() {
-            document.getElementById('detail-panel').classList.remove('open');
-        }
-
-        // Search
         document.getElementById('search').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase();
             if (!allData) return;
 
-            const filtered = {
-                nodes: allData.nodes.filter(n =>
-                    n.content.toLowerCase().includes(query) ||
-                    n.type.toLowerCase().includes(query)
-                ),
-                edges: allData.edges,
-                stats: allData.stats
-            };
+            const filtered = allData.nodes.filter(n =>
+                n.content.toLowerCase().includes(query) ||
+                n.type.toLowerCase().includes(query)
+            );
 
-            renderGraph(filtered);
+            renderMemories(filtered);
         });
 
-        // Load on start
         loadData();
     </script>
 </body>
