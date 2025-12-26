@@ -205,8 +205,7 @@ def cleanup():
     create_exit_handoff()
 
     brain = get_brain()
-    brain.dream()  # Final memory consolidation
-    brain.stop()
+    brain.stop()  # Stop brain (consolidation happens in stop)
 
 
 def handle_sigint(signum, frame):
@@ -308,8 +307,14 @@ def run_gemini(args: list) -> int:
     context = build_auto_context()
 
     cmd = ['gemini']
-    if context:
-        cmd.extend(['--system-instruction', context[:8000]])
+
+    # Gemini CLI doesn't support system instructions directly
+    # Use --prompt-interactive to inject context as first message
+    if context and not any(a in args for a in ['-p', '--prompt', '-i', '--prompt-interactive']):
+        # Prepend context as interactive prompt
+        context_prompt = f"[Memory Context]\n{context[:4000]}\n\n[Ready for your questions]"
+        cmd.extend(['--prompt-interactive', context_prompt])
+
     cmd.extend(args)
 
     return run_with_pty(cmd)
