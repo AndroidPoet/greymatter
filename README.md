@@ -85,6 +85,7 @@ No configuration. No commands to learn. Just talk naturally.
 | 📁 **Project Memory** | Different project? Different memories. Auto-switches when you `cd` |
 | 🔮 **Predictive Loading** | Pre-loads memories you'll probably need |
 | ♻️ **Clear & Resume** | Context full? Use `/clear`. Resume seamlessly—nothing lost |
+| 🔗 **Claude Code Hooks** | Auto-saves context before Claude compacts—never lose state |
 | ⚡ **Zero Config** | Works out of the box. No API keys, no setup |
 | 🪶 **Zero Dependencies** | Pure Python stdlib. Optional neural embeddings |
 
@@ -154,6 +155,53 @@ mem search "auth"      # 🔍 Search memories
 mem forget "secret"    # 🗑️ Forget something
 mem-viz                # 🌐 Visual memory graph (opens browser)
 ```
+
+---
+
+## Claude Code Integration
+
+Grey Matter can hook into Claude Code's automatic context compaction. When Claude's context gets full and auto-compacts, Grey Matter saves your state first.
+
+### Enable Hooks (One-Time Setup)
+
+```bash
+gm-hooks install       # Add hooks to Claude settings
+gm-hooks status        # Check if hooks are installed
+gm-hooks uninstall     # Remove hooks
+```
+
+### What Happens
+
+```
+Context getting full...
+         │
+         ▼
+┌─────────────────────────┐
+│  Claude: PreCompact     │
+│  Grey Matter: Saving... │
+└─────────────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│  Context cleared        │
+│  Memory preserved       │
+└─────────────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│  gm-resume              │
+│  Context restored       │
+└─────────────────────────┘
+```
+
+### Hook Commands
+
+```bash
+gm-precompact          # Manually save state (called automatically by hook)
+gm-resume              # Get resume context after compaction
+```
+
+**Note:** Hooks are opt-in. Grey Matter never modifies your Claude settings without explicit `gm-hooks install`.
 
 ---
 
@@ -292,6 +340,7 @@ greymatter/
 ├── memory.py          # 💾 SQLite + FTS5 storage
 ├── embeddings.py      # 🎯 TF-IDF / neural semantic search
 ├── context_manager.py # ♻️ Clear/resume flow
+├── claude_hooks.py    # 🔗 Claude Code hook integration
 ├── projects.py        # 📁 Per-project isolation
 ├── prediction.py      # 🔮 Context prediction
 ├── smart.py           # ⚡ Token optimization
