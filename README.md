@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.icons8.com/fluency/96/brain.png" alt="Grey Matter" width="96" height="96">
+  <img src="assets/logo.png" alt="Grey Matter" width="128" height="128">
 </p>
 
 <h1 align="center">Grey Matter</h1>
