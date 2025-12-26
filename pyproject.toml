@@ -39,6 +39,10 @@ neural = ["sentence-transformers>=2.0.0"]
 "gm" = "greymatter.wrapper:main"
 "mem" = "greymatter.cli:main"
 "mem-viz" = "greymatter.visualize:main"
+# Claude Code hook integration
+"gm-precompact" = "greymatter.claude_hooks:precompact_main"
+"gm-resume" = "greymatter.claude_hooks:resume_main"
+"gm-hooks" = "greymatter.claude_hooks:hooks_main"
 
 [project.urls]
 Homepage = "https://github.com/greymatter-ai/greymatter"

@@ -110,16 +110,55 @@ sed -i.bak "s|\$INSTALL_DIR|$INSTALL_DIR|g" "$BIN_DIR/mem-viz"
 rm -f "$BIN_DIR/mem-viz.bak"
 chmod +x "$BIN_DIR/mem-viz"
 
+# gm-precompact (Claude hook for auto context save)
+cat > "$BIN_DIR/gm-precompact" << 'EOF'
+#!/usr/bin/env python3
+import sys
+sys.path.insert(0, "$INSTALL_DIR")
+from greymatter.claude_hooks import precompact_main
+sys.exit(precompact_main())
+EOF
+sed -i.bak "s|\$INSTALL_DIR|$INSTALL_DIR|g" "$BIN_DIR/gm-precompact"
+rm -f "$BIN_DIR/gm-precompact.bak"
+chmod +x "$BIN_DIR/gm-precompact"
+
+# gm-resume (Resume from last memory state)
+cat > "$BIN_DIR/gm-resume" << 'EOF'
+#!/usr/bin/env python3
+import sys
+sys.path.insert(0, "$INSTALL_DIR")
+from greymatter.claude_hooks import resume_main
+sys.exit(resume_main())
+EOF
+sed -i.bak "s|\$INSTALL_DIR|$INSTALL_DIR|g" "$BIN_DIR/gm-resume"
+rm -f "$BIN_DIR/gm-resume.bak"
+chmod +x "$BIN_DIR/gm-resume"
+
+# gm-hooks (Manage Claude hook integration)
+cat > "$BIN_DIR/gm-hooks" << 'EOF'
+#!/usr/bin/env python3
+import sys
+sys.path.insert(0, "$INSTALL_DIR")
+from greymatter.claude_hooks import hooks_main
+sys.exit(hooks_main())
+EOF
+sed -i.bak "s|\$INSTALL_DIR|$INSTALL_DIR|g" "$BIN_DIR/gm-hooks"
+rm -f "$BIN_DIR/gm-hooks.bak"
+chmod +x "$BIN_DIR/gm-hooks"
+
 echo ""
 echo "✅ Installation complete!"
 echo ""
 echo "Commands installed:"
-echo "  • claude++   - Claude with human-like memory"
-echo "  • gemini++   - Gemini with human-like memory"
-echo "  • ollama++   - Ollama with human-like memory"
-echo "  • gm         - Grey Matter (auto-detects AI)"
-echo "  • mem        - Memory management CLI"
-echo "  • mem-viz    - Memory visualization (web UI)"
+echo "  • claude++      - Claude with human-like memory"
+echo "  • gemini++      - Gemini with human-like memory"
+echo "  • ollama++      - Ollama with human-like memory"
+echo "  • gm            - Grey Matter (auto-detects AI)"
+echo "  • mem           - Memory management CLI"
+echo "  • mem-viz       - Memory visualization (web UI)"
+echo "  • gm-precompact - Auto-save before context clear"
+echo "  • gm-resume     - Resume from last memory state"
+echo "  • gm-hooks      - Manage Claude Code integration"
 echo ""
 
 # Check PATH
@@ -129,6 +168,14 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     echo "    export PATH=\"\$HOME/.local/bin:\$PATH\""
     echo ""
     echo "Then run: source ~/.zshrc"
+    echo ""
+fi
+
+# Offer to install Claude hooks
+if [ -d "$HOME/.claude" ]; then
+    echo "🔗 Claude Code detected!"
+    echo "   To enable auto context save before compaction, run:"
+    echo "   gm-hooks install"
     echo ""
 fi
 
