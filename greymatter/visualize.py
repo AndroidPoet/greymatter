@@ -307,6 +307,18 @@ HTML_TEMPLATE = '''
         function renderGraph(data) {
             const container = document.getElementById('graph');
 
+            // Destroy existing network to prevent memory leaks
+            if (network) {
+                network.destroy();
+                network = null;
+            }
+
+            // Skip if no data
+            if (!data.nodes || data.nodes.length === 0) {
+                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-size:1.2rem;">No memories yet. Start using Grey Matter!</div>';
+                return;
+            }
+
             const nodes = new vis.DataSet(data.nodes.map(n => ({
                 ...n,
                 color: {
@@ -332,19 +344,20 @@ HTML_TEMPLATE = '''
                 edges: {
                     smooth: { type: 'continuous' }
                 },
-                physics: {
+                physics: data.nodes.length > 2 ? {
                     stabilization: {
                         enabled: true,
-                        iterations: 150,
-                        updateInterval: 25
+                        iterations: 100,
+                        updateInterval: 50
                     },
                     barnesHut: {
-                        gravitationalConstant: -3000,
+                        gravitationalConstant: -2000,
                         springConstant: 0.04,
-                        damping: 0.3
+                        damping: 0.5
                     },
-                    minVelocity: 0.75
-                },
+                    minVelocity: 1.0,
+                    maxVelocity: 30
+                } : false,  // Disable physics for small graphs
                 interaction: {
                     hover: true,
                     tooltipDelay: 100
