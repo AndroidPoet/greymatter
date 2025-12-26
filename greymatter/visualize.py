@@ -333,11 +333,17 @@ HTML_TEMPLATE = '''
                     smooth: { type: 'continuous' }
                 },
                 physics: {
-                    stabilization: { iterations: 100 },
+                    stabilization: {
+                        enabled: true,
+                        iterations: 150,
+                        updateInterval: 25
+                    },
                     barnesHut: {
-                        gravitationalConstant: -2000,
-                        springConstant: 0.04
-                    }
+                        gravitationalConstant: -3000,
+                        springConstant: 0.04,
+                        damping: 0.3
+                    },
+                    minVelocity: 0.75
                 },
                 interaction: {
                     hover: true,
@@ -351,6 +357,11 @@ HTML_TEMPLATE = '''
                 if (params.nodes.length > 0) {
                     showDetail(params.nodes[0]);
                 }
+            });
+
+            // Stop physics after stabilization
+            network.on('stabilizationIterationsDone', function() {
+                network.setOptions({ physics: false });
             });
         }
 
