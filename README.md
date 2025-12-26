@@ -1,69 +1,143 @@
-# Grey Matter
+<p align="center">
+  <img src="https://img.icons8.com/fluency/96/brain.png" alt="Grey Matter" width="96" height="96">
+</p>
 
-**Human-Like Memory for AI CLIs**
+<h1 align="center">Grey Matter</h1>
 
-Give Claude, Gemini, and Ollama a brain that remembers everything—automatically.
+<p align="center">
+  <strong>Give your AI a brain that actually remembers.</strong>
+</p>
+
+<p align="center">
+  <a href="#installation"><img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python 3.8+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/dependencies-zero-brightgreen.svg" alt="Zero Dependencies"></a>
+  <a href="#"><img src="https://img.shields.io/badge/tests-33%20passing-success.svg" alt="Tests Passing"></a>
+</p>
+
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#features">Features</a> •
+  <a href="#how-it-works">How It Works</a> •
+  <a href="#commands">Commands</a>
+</p>
+
+---
+
+## The Problem
+
+Every time you start a new chat with Claude, Gemini, or Ollama:
+
+```
+You: "Remember, I prefer TypeScript and use 2-space indentation"
+AI:  "Got it!"
+
+[Next session]
+
+You: "What are my coding preferences?"
+AI:  "I don't have any information about your preferences."
+```
+
+**Your AI has amnesia.**
+
+## The Solution
 
 ```bash
-# Install
 pip install greymatter-ai
-
-# Use (that's it!)
 claude++
 ```
 
-## What It Does
+That's it. Now your AI remembers **everything**—automatically.
 
-Grey Matter wraps your AI CLI with a memory layer that works like a human brain:
+```
+You: "I prefer TypeScript and 2-space indentation"
+AI:  "Got it!"
 
-- **Remembers** important things automatically (preferences, decisions, learnings)
-- **Forgets** unimportant stuff over time
-- **Recalls** relevant context when you need it
-- **Switches** memory per project (cd to different folder = different context)
-- **Resumes** seamlessly after `/clear` (no lost context!)
+[Next session, next week, next month]
 
-No commands needed. Just talk naturally.
+You: "What are my preferences?"
+AI:  "You prefer TypeScript with 2-space indentation."
+```
+
+---
+
+## Quick Start
+
+```bash
+# Install
+pip install git+https://github.com/AndroidPoet/greymatter.git
+
+# Run (that's it!)
+claude++     # or gemini++ or ollama++
+```
+
+No configuration. No commands to learn. Just talk naturally.
+
+---
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **Human-Like Memory** | Working memory (7 items) → Long-term encoding → Consolidation |
-| **Semantic Search** | Finds by meaning, not just keywords |
-| **Per-Project Memory** | Auto-switches when you `cd` to different projects |
-| **Context Prediction** | Pre-loads what you'll likely need |
-| **Clear/Resume** | Use `/clear` when context is full—resumes automatically |
-| **Token Optimization** | Compresses, deduplicates, tiers memories |
-| **Zero Dependencies** | Pure Python stdlib (optional: neural embeddings) |
-| **Works with Any AI** | Claude, Gemini, Ollama, and more |
+| Feature | What it does |
+|---------|--------------|
+| 🧠 **Human-Like Memory** | Remembers like you do—important stuff sticks, trivial stuff fades |
+| 🔍 **Semantic Search** | Finds memories by *meaning*, not just keywords |
+| 📁 **Project Memory** | Different project? Different memories. Auto-switches when you `cd` |
+| 🔮 **Predictive Loading** | Pre-loads memories you'll probably need |
+| ♻️ **Clear & Resume** | Context full? Use `/clear`. Resume seamlessly—nothing lost |
+| ⚡ **Zero Config** | Works out of the box. No API keys, no setup |
+| 🪶 **Zero Dependencies** | Pure Python stdlib. Optional neural embeddings |
 
-## Installation
+---
 
-### Quick Install (pip)
+## How It Works
 
-```bash
-pip install greymatter-ai
+Grey Matter wraps your AI CLI with a memory layer modeled after human cognition:
+
+```
+                         ┌─────────────────┐
+                         │   You speak     │
+                         └────────┬────────┘
+                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│  👁️  PERCEPTION                                              │
+│      Analyzes intent, emphasis, importance                  │
+└─────────────────────────────────────────────────────────────┘
+                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│  🎯 ATTENTION                                                │
+│      Focuses on what matters (like "ALWAYS" or "I prefer") │
+└─────────────────────────────────────────────────────────────┘
+                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│  💾 ENCODING                                                 │
+│      Important → Long-term memory                           │
+│      Trivial → Forgotten                                    │
+└─────────────────────────────────────────────────────────────┘
+                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│  🔄 RECALL                                                   │
+│      Relevant memories surface automatically                │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### From Source
+### The "Clear, Don't Compact" Philosophy
 
-```bash
-git clone https://github.com/greymatter-ai/greymatter.git
-cd greymatter
-pip install -e .
-```
+When AI context gets full, most tools try to summarize. **Summarization loses information.**
 
-### Optional: Neural Embeddings
+Grey Matter does it differently:
 
-For better semantic search (uses sentence-transformers):
+1. **Save** everything important to persistent memory
+2. **Clear** the context completely
+3. **Resume** with a handoff containing exactly what you need
 
-```bash
-pip install -e ".[neural]"
-```
+Result: Fresh context, zero information loss.
 
-## Usage
+---
 
-### Just Run It
+## Commands
+
+### Primary
 
 ```bash
 claude++     # Claude with memory
@@ -71,126 +145,45 @@ gemini++     # Gemini with memory
 ollama++     # Ollama with memory
 ```
 
-That's it. Everything is automatic:
-- Important things are remembered
-- Relevant context surfaces automatically
-- Project memory switches when you `cd`
-- Old unimportant stuff fades away
-
-### Memory Management (optional)
+### Memory Management (Optional)
 
 ```bash
-mem stats              # Show memory statistics
-mem list               # List recent memories
-mem search "query"     # Search memories
-mem forget "query"     # Forget something
-mem-viz                # Open visualization in browser
+mem stats              # 📊 Memory statistics
+mem list               # 📋 Recent memories
+mem search "auth"      # 🔍 Search memories
+mem forget "secret"    # 🗑️ Forget something
+mem-viz                # 🌐 Visual memory graph (opens browser)
 ```
 
-### When Context Gets Full
+---
 
-1. Grey Matter tracks context usage in real-time
-2. Shows warning when approaching limit
-3. Auto-creates handoff with all important state
-4. You run `/clear` in your AI CLI
-5. Next time you run `claude++`, it resumes automatically!
+## Installation
 
-## How It Works
-
-```
-┌─────────────────────────────────────────────────────┐
-│                    YOU TALK                          │
-└─────────────────────┬───────────────────────────────┘
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│  PERCEPTION → Analyzes meaning (intent, emphasis)    │
-└─────────────────────┬───────────────────────────────┘
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│  ATTENTION → Focuses on important information        │
-└─────────────────────┬───────────────────────────────┘
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│  ENCODING → Stores to long-term if memorable         │
-└─────────────────────┬───────────────────────────────┘
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│  RECALL → Surfaces relevant memories automatically   │
-└─────────────────────────────────────────────────────┘
-```
-
-### Memory Types
-
-- **Sensory** → Brief, mostly filtered out
-- **Working** → Short-term, ~7 items (Miller's Law)
-- **Episodic** → Events and experiences
-- **Semantic** → Facts and knowledge
-- **Procedural** → How-to and skills
-
-### The "Clear, Don't Compact" Philosophy
-
-When AI context gets full, most tools try to compress/summarize. This loses information.
-
-Grey Matter takes a different approach:
-1. **Save everything important** to persistent memory
-2. **Clear the context** completely
-3. **Resume with handoff** containing exactly what you need
-
-Result: No information loss, fresh context, seamless continuation.
-
-## Architecture
-
-```
-greymatter/
-├── brain.py          # Human-like memory system
-├── understanding.py  # Semantic analysis (intent, emphasis)
-├── memory.py         # SQLite + FTS5 storage
-├── smart.py          # Token optimization
-├── embeddings.py     # TF-IDF + optional neural search
-├── projects.py       # Per-project memory isolation
-├── prediction.py     # Context prediction & prefetch
-├── context_manager.py # Clear/resume flow
-├── visualize.py      # Memory graph web UI
-├── wrapper.py        # CLI wrapper (claude++, etc.)
-├── session.py        # Session lifecycle
-├── hooks.py          # Event hooks
-├── agents.py         # Specialized agents
-├── triggers.py       # Natural language triggers
-└── skills.py         # Quick utilities
-```
-
-## Configuration
-
-Grey Matter works out of the box with zero configuration. But you can customize:
+### From GitHub (Recommended)
 
 ```bash
-# Environment variables
-export GREYMATTER_DATA_DIR="~/.greymatter"  # Data location
-export GREYMATTER_USE_NEURAL=1              # Enable neural embeddings
+pip install git+https://github.com/AndroidPoet/greymatter.git
 ```
 
-## Data Storage
+### From Source
 
-All data stored locally in `~/.greymatter/`:
-
-```
-~/.greymatter/
-├── memory.db          # Main SQLite database
-├── projects/          # Per-project databases
-│   ├── my-app.db
-│   └── other-project.db
-└── config.json        # Optional config
+```bash
+git clone https://github.com/AndroidPoet/greymatter.git
+cd greymatter
+pip install -e .
 ```
 
-## Requirements
+### Optional: Neural Embeddings
 
-- Python 3.8+
-- One of: Claude CLI, Gemini CLI, or Ollama
-- No other dependencies (neural embeddings optional)
+For even better semantic search:
 
-## CLI Installation
+```bash
+pip install greymatter-ai[neural]
+```
 
-Grey Matter wraps these AI CLIs:
+### Prerequisites
+
+You need at least one AI CLI installed:
 
 ```bash
 # Claude Code
@@ -200,44 +193,143 @@ npm install -g @anthropic-ai/claude-code
 pip install google-generativeai
 
 # Ollama
-brew install ollama  # or see ollama.ai
+brew install ollama
 ```
+
+---
+
+## What Gets Remembered?
+
+Grey Matter automatically detects and remembers:
+
+| Type | Examples |
+|------|----------|
+| **Preferences** | "I prefer dark mode", "Always use TypeScript" |
+| **Decisions** | "We decided to use PostgreSQL", "Going with REST over GraphQL" |
+| **Learnings** | "TIL the API uses JWT", "Found out the bug was in auth" |
+| **Important Info** | "IMPORTANT: Never commit .env", "The prod server is 10.0.0.1" |
+| **Problems & Solutions** | "Fixed the memory leak by...", "The issue was caused by..." |
+
+Things that get forgotten:
+- Small talk ("ok", "thanks", "sure")
+- Repeated information (deduplication)
+- Old, unaccessed memories (natural decay)
+
+---
+
+## Project Isolation
+
+Grey Matter automatically isolates memory per project:
+
+```bash
+cd ~/work/api-project
+claude++
+# Memories: API endpoints, database schema, auth flow
+
+cd ~/personal/blog
+claude++
+# Different memories: Blog structure, writing style, deploy process
+```
+
+No commands needed. Just `cd` and it switches.
+
+---
+
+## Data & Privacy
+
+**Your data stays local.** Always.
+
+```
+~/.greymatter/
+├── memory.db          # SQLite database (your memories)
+└── projects/          # Per-project memories
+    ├── api-project.db
+    └── blog.db
+```
+
+- No cloud sync
+- No telemetry
+- No API calls (except to your chosen AI)
+- Everything in `~/.greymatter/`
+
+---
 
 ## Troubleshooting
 
-### Commands not found after install
-
-Add to your `~/.zshrc` or `~/.bashrc`:
+### Commands not found
 
 ```bash
+# Add to ~/.zshrc or ~/.bashrc:
 export PATH="$HOME/.local/bin:$PATH"
+source ~/.zshrc
 ```
-
-Then: `source ~/.zshrc`
 
 ### Memory not persisting
 
-Check data directory exists:
-
 ```bash
+# Check data directory:
 ls ~/.greymatter/
 ```
 
-### Context not resuming after /clear
+### Not resuming after /clear
 
-Ensure you exit cleanly (Ctrl+C saves state):
+Exit cleanly with `Ctrl+C` (saves handoff):
 
 ```bash
-claude++  # Use normally
-# Press Ctrl+C to exit (saves handoff)
-claude++  # Should show "RESUMING FROM PREVIOUS SESSION"
+claude++          # Use normally
+# Ctrl+C          # Saves state
+claude++          # Shows "RESUMING FROM PREVIOUS SESSION"
 ```
+
+---
+
+## Architecture
+
+```
+greymatter/
+├── brain.py           # 🧠 Human-like memory orchestrator
+├── understanding.py   # 🔍 Intent & emphasis detection
+├── memory.py          # 💾 SQLite + FTS5 storage
+├── embeddings.py      # 🎯 TF-IDF / neural semantic search
+├── context_manager.py # ♻️ Clear/resume flow
+├── projects.py        # 📁 Per-project isolation
+├── prediction.py      # 🔮 Context prediction
+├── smart.py           # ⚡ Token optimization
+├── wrapper.py         # 🔌 CLI wrapper
+└── visualize.py       # 🌐 Memory graph UI
+```
+
+---
+
+## Safety & Security
+
+✅ **Safe to use:**
+- No network calls except to your AI CLI
+- No data leaves your machine
+- No tracking or analytics
+- Open source—read the code
+
+✅ **Code quality:**
+- 33 tests passing
+- Type hints throughout
+- No external dependencies (stdlib only)
+- Optimized (indexed DB, bounded caches, O(log n) operations)
+
+---
 
 ## Inspired By
 
-- [Continuous-Claude](https://github.com/parcadei/Continuous-Claude) — "Clear, don't compact" philosophy
+- [Continuous-Claude](https://github.com/parcadei/Continuous-Claude) — The "clear, don't compact" philosophy
 - Human memory systems — Working memory, encoding, consolidation, retrieval
+
+---
 
 ## License
 
-MIT
+MIT — Use it however you want.
+
+---
+
+<p align="center">
+  <sub>Built for developers who are tired of repeating themselves.</sub>
+</p>
